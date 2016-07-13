@@ -1,5 +1,6 @@
 package com.theironyard;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
@@ -57,9 +58,28 @@ public class Main {
     }
 
     static boolean isStraight(HashSet<Card> hand) {
-        HashSet<Card.Rank> ranks = hand.stream()
-                .map(card -> card.rank)
-                .collect(Collectors.toCollection(HashSet<Card.Rank>::new));
+        ArrayList<Integer> ranks = hand.stream()
+                .map(card -> card.rank.ordinal())
+                .sorted()
+                .collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<Integer> ranked = new ArrayList<>();
+        int s = ranks.get(0);
+        for (int r = 0; r < ranks.size(); r++) {
+            ranked.add(s + r);
+        }
+
+        return ranks.equals(ranked);
+
+    }
+
+    static boolean isStraightFlush(HashSet<Card> hand) {
+        return isStraight(hand) && isFlush(hand);
+    }
+
+    static boolean isThreeOfAKind(HashSet<Card> hand) {
+        ArrayList<Integer> ranks = hand.stream()
+                .map(card -> card.rank.ordinal())
+                .collect(Collectors.toCollection(ArrayList::new));
 
     }
 
@@ -69,6 +89,18 @@ public class Main {
         HashSet<HashSet<Card>> flushes = hands.stream()
                 .filter(Main:: isFlush)
                 .collect(Collectors.toCollection(HashSet<HashSet<Card>>::new));
+        HashSet<HashSet<Card>> four = hands.stream()
+                .filter(Main:: isFourOfAKind)
+                .collect(Collectors.toCollection(HashSet<HashSet<Card>>::new));
+        HashSet<HashSet<Card>> straight = hands.stream()
+                .filter(Main:: isStraight)
+                .collect(Collectors.toCollection(HashSet<HashSet<Card>>::new));
+        HashSet<HashSet<Card>> straightFlush = hands.stream()
+                .filter(Main:: isStraightFlush)
+                .collect(Collectors.toCollection(HashSet<HashSet<Card>>::new));
         System.out.println(flushes.size());
+        System.out.println(four.size());
+        System.out.println(straight.size());
+        System.out.println(straightFlush.size());
     }
 }
